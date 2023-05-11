@@ -91,8 +91,7 @@ Channel.hasMany(Message, {
 });
 Message.belongsTo(Channel, { as: 'channel', foreignKey: 'channelId' });
 
-const sync = async () =>
-	await sequelize.sync({ force: process.env.NODE_ENV === 'development' });
+const sync = async () => await sequelize.sync();
 
 sync().then(() => {
 	User.create({
