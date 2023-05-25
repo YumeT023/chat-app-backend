@@ -92,7 +92,7 @@ Channel.hasMany(Message, {
 Message.belongsTo(Channel, { as: 'channel', foreignKey: 'channelId' });
 
 const sync = async () => await sequelize.sync();
-
+/*
 sync().then(() => {
 	User.create({
 		name: 'Elin Mask',
@@ -105,6 +105,7 @@ sync().then(() => {
 		password: 'Jarvis1234',
 	});
 });
+*/
 
 app.listen(PORT, () => {
 	console.log(

@@ -1,10 +1,11 @@
 const asyncHandler = require('../middlewares/asyncHandler');
 const User = require('../models/User');
+const Channel = require('../models/Channel');
 const ErrorResponse = require('../util/errorResponse');
 const { sign } = require('../util/jwt');
 const bcrypt = require('bcryptjs');
 const { fieldValidation } = require('../util/helpers');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 
 module.exports.createUser = asyncHandler(async (req, res, next) => {
 	const { email, password, name, bio } = req.body;
@@ -61,6 +62,28 @@ module.exports.loginUser = asyncHandler(async (req, res, next) => {
 	user.dataValues.bio = null;
 
 	res.status(200).json({ status: true, user });
+});
+
+module.exports.getUsersByChannelId = asyncHandler(async (req, res, next) => {
+	const { channelId } = req.params;
+	const channel = await Channel.findByPk(channelId);
+
+	if (!channel) {
+		return next(new ErrorResponse(`Channel not found`, 404));
+	}
+
+	const users = await User.findAll({
+		where: {
+			id: {
+				[Op.in]: Sequelize.literal(
+					`(SELECT "memberId" FROM "ChannelMembers" WHERE "channelId" = ${channel.id})`,
+				),
+			},
+		},
+		attributes: ['id', 'name', 'email', 'bio'],
+	});
+
+	return res.status(200).json({ status: true, users });
 });
 
 module.exports.getCurrentUser = asyncHandler(async (req, res, next) => {
