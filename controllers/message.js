@@ -48,7 +48,7 @@ module.exports.getMessagesByUser = asyncHandler(async (req, res) => {
         attributes: ["id", "name", "email"],
       },
     ],
-    order: [["createdAt", "DESC"]],
+    order: [["createdAt", "ASC"]],
   });
   return res.status(200).json({ status: true, messages });
 });
